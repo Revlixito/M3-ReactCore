@@ -1,0 +1,338 @@
+/* Variables con los colores, radios y sombras que se reutilizan en el resto del archivo */
+:root {
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); /* Fondo oscuro con degradado */
+  --card-bg: rgba(30, 41, 59, 0.7); /* Fondo semitransparente para efecto cristal */
+  --card-border: rgba(255, 255, 255, 0.1); /* Borde blanco tenue */
+  --text-main: #f8fafc; /* Color de texto principal casi blanco */
+  --text-muted: #94a3b8; /* Color de texto secundario gris claro */
+  --accent-color: #38bdf8; /* Azul claro para elementos activos */
+  --accent-hover: #0ea5e9; /* Azul mas oscuro al pasar el raton */
+  --error-bg: rgba(239, 68, 68, 0.15); /* Fondo rojo transparente para alertas */
+  --error-border: #ef4444; /* Borde rojo solido */
+  --error-text: #fca5a5; /* Texto rojo claro legible */
+
+  --radius-sm: 8px; /* Esquinas redondeadas pequeñas para inputs y botones */
+  --radius-md: 16px; /* Esquinas redondeadas medianas para metricas */
+  --radius-lg: 24px; /* Esquinas redondeadas grandes para la tarjeta */
+  --shadow-elevation: 0 10px 30px -10px rgba(0, 0, 0, 0.5); /* Sombra suave hacia abajo */
+  --transition-fast: 0.2s ease; /* Transicion rapida para hover */
+}
+
+/* Reseteo basico: quita margenes por defecto y hace que padding no sume al ancho */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Configuracion del fondo de pantalla y centrado de la aplicacion */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: var(--bg-gradient); /* Aplica el degradado de fondo */
+  color: var(--text-main); /* Aplica el color de texto blanco */
+  min-height: 100vh; /* Ocupa al menos el 100% de la altura de la ventana */
+  display: flex; /* Activa flexbox */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  padding: 1.5rem; /* Margen interior para que no toque los bordes de la pantalla */
+}
+
+/* Contenedor central que limita el ancho maximo de la aplicacion */
+.app-container {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  max-width: 680px; /* Limite maximo de ancho para que no se estire demasiado */
+  display: flex; /* Flexbox vertical */
+  flex-direction: column; /* Coloca los hijos uno debajo de otro */
+  gap: 1.5rem; /* Separacion de 24px entre cabecera, mensajes y tarjeta */
+}
+
+/* Encabezado */
+.app-header {
+  text-align: center; /* Centra el texto del titulo */
+}
+
+.app-title {
+  font-size: 1.4rem; /* Tamaño de letra del titulo */
+  font-weight: 600; /* Grosor de letra semi-negrita */
+  letter-spacing: 0.05em; /* Separacion ligera entre letras */
+  text-transform: uppercase; /* Convierte el texto a mayusculas */
+  color: var(--accent-color); /* Color azul claro */
+}
+
+/* Mensajes de estado (cargando y errores) */
+.status-message {
+  padding: 1rem; /* Relleno interior */
+  border-radius: var(--radius-sm); /* Bordes redondeados de 8px */
+  text-align: center; /* Centra el texto */
+  font-size: 0.95rem; /* Tamaño de fuente legible */
+  background: rgba(56, 189, 248, 0.1); /* Fondo azul clarito tenue */
+  border: 1px solid var(--accent-color); /* Borde azul claro */
+  color: var(--accent-color); /* Texto azul claro */
+  backdrop-filter: blur(8px); /* Desenfoque de fondo */
+}
+
+/* Modificador cuando el mensaje es de error */
+.status-message.error {
+  background: var(--error-bg); /* Fondo rojo semitransparente */
+  border-color: var(--error-border); /* Borde rojo */
+  color: var(--error-text); /* Texto rojo */
+}
+
+/* Animacion de puntos suspensivos que parpadean durante la carga */
+#loading-spinner p::after {
+  content: ""; /* Crea un elemento al final del texto */
+  display: inline-block; /* Permite animarlo en la misma linea */
+  animation: dots 1.5s infinite; /* Ejecuta la animacion dots en bucle */
+}
+
+/* Pasos de la animacion de los puntos de carga */
+@keyframes dots {
+  0%, 20% { content: "."; }
+  40% { content: ".."; }
+  60%, 100% { content: "..."; }
+}
+
+/* Tarjeta principal con efecto de vidrio */
+.weather-card {
+  background: var(--card-bg); /* Fondo gris oscuro translucido */
+  border: 1px solid var(--card-border); /* Borde fino blanco */
+  border-radius: var(--radius-lg); /* Esquinas redondeadas de 24px */
+  padding: 2rem; /* Espaciado interno amplio */
+  backdrop-filter: blur(16px); /* Efecto de cristal esmerilado */
+  -webkit-backdrop-filter: blur(16px); /* Soporte para navegadores Safari */
+  box-shadow: var(--shadow-elevation); /* Sombra exterior */
+  display: flex; /* Flexbox vertical */
+  flex-direction: column;
+  gap: 1.8rem; /* Separacion constante entre los bloques internos */
+}
+
+/* Bloque central: Ciudad, Temperatura principal y Descripcion */
+.current-core {
+  text-align: center; /* Centra todo el contenido */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los elementos horizontalmente */
+  gap: 0.25rem; /* Pequeña separacion vertical */
+}
+
+.city-name {
+  font-size: 2rem; /* Tamaño grande para el nombre de la ciudad */
+  font-weight: 700; /* Negrita */
+  letter-spacing: -0.02em; /* Junta un poco las letras */
+}
+
+.temp-wrapper {
+  display: flex; /* Pone el numero y el simbolo en linea */
+  align-items: flex-start; /* Alinea el simbolo arriba respecto al numero */
+  justify-content: center;
+  margin: 0.5rem 0; /* Margen arriba y abajo */
+}
+
+.main-temperature {
+  font-size: 5.5rem; /* Tamaño muy grande para la temperatura */
+  font-weight: 300; /* Letra fina y limpia */
+  line-height: 1; /* Evita que la altura de linea cree espacio extra */
+}
+
+.temp-unit {
+  font-size: 2rem; /* Tamaño mediano para el simbolo de grados */
+  font-weight: 300;
+  color: var(--accent-color); /* Color azul claro */
+  margin-top: 0.5rem; /* Desplaza el simbolo ligeramente hacia abajo */
+}
+
+.weather-desc {
+  font-size: 1.1rem; /* Tamaño de letra mediano */
+  text-transform: capitalize; /* Pone la primera letra en mayuscula */
+  color: var(--text-muted); /* Gris claro */
+}
+
+/* Boton para alternar entre Celsius y Fahrenheit */
+.unit-toggle-btn {
+  margin-top: 0.6rem; /* Margen superior respecto a la descripcion */
+  background: transparent; /* Fondo transparente */
+  color: var(--accent-color); /* Texto azul claro */
+  border: 1px solid var(--accent-color); /* Borde fino azul */
+  padding: 0.35rem 0.9rem; /* Relleno comodo para pulsar */
+  border-radius: var(--radius-sm); /* Bordes redondeados de 8px */
+  font-size: 0.8rem; /* Letra pequeña */
+  cursor: pointer; /* Cambia el cursor a mano al pasar por encima */
+  transition: background var(--transition-fast), color var(--transition-fast); /* Cambio suave */
+}
+
+.unit-toggle-btn:hover {
+  background: var(--accent-color); /* Fondo azul al pasar el raton */
+  color: #0f172a; /* Texto oscuro para contraste */
+}
+
+/* Bloque intermedio: Cuadricula de 3 metricas (Humedad, Viento, Lluvia) */
+.weather-metrics {
+  display: grid; /* Cuadricula CSS Grid */
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas de igual ancho */
+  gap: 1rem; /* Hueco de separacion entre columnas */
+  background: rgba(15, 23, 42, 0.4); /* Fondo un poco mas oscuro que la tarjeta */
+  padding: 1rem; /* Margen interior */
+  border-radius: var(--radius-md); /* Esquinas de 16px */
+  border: 1px solid var(--card-border); /* Borde sutil */
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column; /* Apila etiqueta arriba y valor abajo */
+  align-items: center; /* Centra el texto */
+  gap: 0.35rem; /* Separacion entre etiqueta y numero */
+  text-align: center;
+}
+
+.metric-label {
+  font-size: 0.8rem; /* Letra pequeña */
+  text-transform: uppercase; /* Mayusculas */
+  color: var(--text-muted); /* Color gris tenue */
+  letter-spacing: 0.05em; /* Separacion entre caracteres */
+}
+
+.metric-value {
+  font-size: 1.15rem; /* Letra visible */
+  font-weight: 600; /* Semi-negrita */
+  color: var(--text-main); /* Color blanco */
+}
+
+/* Seccion del buscador y selector de ubicacion */
+.city-selector-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Separacion entre el label y los controles */
+}
+
+.selector-label {
+  font-size: 0.85rem;
+  color: var(--text-muted); /* Color gris */
+}
+
+.selector-controls {
+  display: flex;
+  gap: 0.6rem; /* Separacion entre select, input y boton */
+  flex-wrap: wrap; /* Si no cabe en una linea, salta a la siguiente */
+}
+
+/* Estilos comunes para select, input y boton */
+.selector-controls select,
+.selector-controls input,
+.selector-controls button {
+  font-size: 0.95rem;
+  padding: 0.65rem 1rem; /* Espaciado uniforme */
+  border-radius: var(--radius-sm); /* Bordes redondeados */
+  outline: none; /* Quita el marco azul por defecto del navegador */
+  border: 1px solid var(--card-border);
+  background: rgba(15, 23, 42, 0.6); /* Fondo oscuro semitransparente */
+  color: var(--text-main); /* Texto blanco */
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.selector-controls select {
+  flex: 1 1 140px; /* Ancho base de 140px, puede crecer si hay espacio */
+  cursor: pointer;
+}
+
+.selector-controls input {
+  flex: 2 1 180px; /* Crece el doble que el select si hay hueco libre */
+}
+
+/* Resalta el borde en azul cuando el usuario hace clic dentro */
+.selector-controls select:focus,
+.selector-controls input:focus {
+  border-color: var(--accent-color);
+}
+
+/* Boton de enviar el formulario */
+.selector-controls button {
+  background: var(--accent-color); /* Fondo azul */
+  color: #0f172a; /* Texto oscuro */
+  font-weight: 600; /* Negrita */
+  border: none; /* Sin borde */
+  cursor: pointer;
+  padding: 0.65rem 1.4rem;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.selector-controls button:hover {
+  background: var(--accent-hover); /* Azul mas intenso */
+}
+
+.selector-controls button:active {
+  transform: scale(0.98); /* Efecto de pulsado */
+}
+
+/* Seccion inferior de previsiones horarias */
+.forecast-section {
+  border-top: 1px solid var(--card-border); /* Linea divisoria arriba */
+  padding-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.forecast-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Fila horizontal con desplazamiento para las tarjetas de horas */
+.forecast-grid {
+  display: flex; /* Elementos alineados en fila horizontal */
+  gap: 0.8rem; /* Espacio entre cada tarjeta */
+  overflow-x: auto; /* Permite deslizar horizontalmente si no caben todas */
+  padding-bottom: 0.5rem; /* Hueco para que la barra de scroll no toque el contenido */
+  scrollbar-width: thin; /* Barra de scroll fina en Firefox */
+  scrollbar-color: var(--card-border) transparent; /* Colores de la barra de scroll */
+}
+
+/* Cada tarjeta horaria individual */
+.forecast-card {
+  flex: 0 0 85px; /* Ancho fijo de 85px sin encogerse */
+  background: rgba(15, 23, 42, 0.4); /* Fondo oscuro */
+  border: 1px solid var(--card-border); /* Borde sutil */
+  border-radius: var(--radius-sm); /* Bordes redondeados */
+  padding: 0.75rem 0.5rem; /* Margen interior */
+  display: flex;
+  flex-direction: column; /* Apila hora, icono y temperatura */
+  align-items: center; /* Centra todo horizontalmente */
+  gap: 0.4rem; /* Separacion interna */
+  font-size: 0.85rem;
+}
+
+.forecast-time {
+  color: var(--text-muted); /* Hora en color gris */
+}
+
+.forecast-icon {
+  width: 40px; /* Tamaño fijo de icono */
+  height: 40px;
+}
+
+.forecast-temp {
+  font-weight: 600; /* Temperatura en negrita */
+}
+
+/* Reglas responsivas para pantallas de moviles estrechas */
+@media (max-width: 480px) {
+  .main-temperature {
+    font-size: 4.2rem; /* Reduce un poco el tamaño del numero en moviles */
+  }
+
+  .weather-metrics {
+    grid-template-columns: 1fr; /* Pasa de 3 columnas a 1 sola columna vertical */
+    gap: 0.8rem;
+  }
+
+  .selector-controls {
+    flex-direction: column; /* Apila el select, input y boton verticalmente */
+  }
+
+  .selector-controls select,
+  .selector-controls input,
+  .selector-controls button {
+    width: 100%; /* Cada control ocupa todo el ancho */
+  }
+}
